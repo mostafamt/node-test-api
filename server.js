@@ -12,6 +12,7 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, {
     "Content-Type": "application/json",
     "X-Powered-By": "Node.js",
+    "Access-Control-Allow-Origin": "*",
   });
 
   if (method === "GET" && url === "/questions") {
