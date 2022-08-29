@@ -30,6 +30,6 @@ const server = http.createServer((req, res) => {
   }
 });
 
-const PORT = 5000;
+const PORT = 5000 || process.env.PORT;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
