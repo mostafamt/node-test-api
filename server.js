@@ -1,9 +1,10 @@
 const http = require("http");
 const Test = require("./TestQuestions");
+const rank = require("./Rank");
 
 const result = Test.getRandomDifferentTenQuestionsOfAllTypes();
 
-console.log(result);
+// console.log(rank.getRank(50));
 
 const server = http.createServer((req, res) => {
   const { method, url } = req;
@@ -19,12 +20,18 @@ const server = http.createServer((req, res) => {
         data: result,
       })
     );
+  } else if (method === "POST" && url == "/rank") {
+    const { score } = req.headers;
+    const resultRank = rank.getRank(score);
+    res.end(
+      JSON.stringify({
+        data: resultRank,
+      })
+    );
   } else {
     res.end(
       JSON.stringify({
-        success: false,
-        data: "hi",
-        error: "Please add email",
+        error: "Please Provide a correct API",
       })
     );
   }
