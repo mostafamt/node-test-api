@@ -41,7 +41,7 @@ let chooseRandomQuestions = () => {
   clean();
   let nums = NUM_OF_QUESTIONS;
   while (nums > 0) {
-    const idx = getRandomNumber(questions.length);
+    let idx = getRandomNumber(questions.length);
     if (selected[idx]) {
       continue;
     } else {
@@ -66,6 +66,11 @@ function getRandomDifferentTenQuestionsOfAllTypes() {
   return finalResult;
 }
 
+function getRandom() {
+  return getRandomDifferentTenQuestionsOfAllTypes();
+}
+
 module.exports = {
   getRandomDifferentTenQuestionsOfAllTypes,
+  getRandom,
 };

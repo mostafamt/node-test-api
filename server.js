@@ -2,8 +2,6 @@ const http = require("http");
 const Test = require("./TestQuestions");
 const rank = require("./Rank");
 
-const result = Test.getRandomDifferentTenQuestionsOfAllTypes();
-
 // console.log(rank.getRank(50));
 
 const server = http.createServer((req, res) => {
@@ -12,10 +10,11 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, {
     "Content-Type": "application/json",
     "X-Powered-By": "Node.js",
-    "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
   });
 
   if (method === "GET" && url === "/questions") {
+    let result = Test.getRandomDifferentTenQuestionsOfAllTypes();
     res.end(
       JSON.stringify({
         data: result,
