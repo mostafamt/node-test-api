@@ -2,41 +2,34 @@ const http = require("http");
 const Test = require("./TestQuestions");
 const rank = require("./Rank");
 
-// console.log(rank.getRank(50));
+const express = require("express");
+const cors = require("cors");
+var bodyParser = require("body-parser");
 
-const server = http.createServer((req, res) => {
-  const { method, url } = req;
+const app = express();
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-  res.writeHead(200, {
-    "Content-Type": "application/json",
-    "X-Powered-By": "Node.js",
-    "Access-Control-Allow-Origin": "*",
+app.get("/questions", (req, res) => {
+  let result = Test.getRandomDifferentTenQuestionsOfAllTypes();
+  res.json({
+    data: result,
   });
+});
 
-  if (method === "GET" && url === "/questions") {
-    let result = Test.getRandomDifferentTenQuestionsOfAllTypes();
-    res.end(
-      JSON.stringify({
-        data: result,
-      })
-    );
-  } else if (method === "POST" && url == "/rank") {
-    const { score } = req.headers;
-    const resultRank = rank.getRank(score);
-    res.end(
-      JSON.stringify({
-        data: resultRank,
-      })
-    );
-  } else {
-    res.end(
-      JSON.stringify({
-        error: "Please Provide a correct API",
-      })
-    );
-  }
+app.post("/rank", (req, res) => {
+  const ans = rank.getRank(req.headers.score);
+  res.json({
+    data: ans,
+  });
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    message: `Hello World`,
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
