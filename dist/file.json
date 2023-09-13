@@ -1,0 +1,27 @@
+{
+  "answers": [
+    {
+      "correct": false,
+      "tipsAndFeedback": {
+        "chosenFeedback": "<div>FB-Selected1</div>\\n",
+        "notChosenFeedback": "<div>FB-notSelected1</div>\\n",
+        "tip": ""
+      },
+      "text": "<div>Option1</div>\\n"
+    },
+    {
+      "correct": true,
+      "tipsAndFeedback": {
+        "tip": "",
+        "chosenFeedback": "<div>FB-Selected2</div>\\n",
+        "notChosenFeedback": "<div>FB-notSelected2</div>\\n"
+      },
+      "text": "<div>Option2</div>\\n"
+    }
+  ],
+  "overallFeedback": [
+    { "from": 0, "to": 49, "feedback": "you can do better" },
+    { "from": 50, "to": 79, "feedback": "Not bad" },
+    { "from": 80, "to": 100, "feedback": "Excellent" }
+  ]
+}

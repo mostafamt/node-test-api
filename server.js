@@ -1,88 +1,83 @@
 const express = require("express");
-import { uuid } from "uuid";
-const { initializeApp } = require("firebase/app");
-const { getFirestore, collection, getDocs } = require("firebase/firestore");
-const {
-  getStorage,
-  ref,
-  uploadBytes,
-  uploadString,
-  getDownloadURL,
-} = require("firebase/storage");
+
 const cors = require("cors");
 var bodyParser = require("body-parser");
 const fs = require("fs");
 const {
-  replaceQuestionHeader,
-  replaceQuestions,
-} = require("./Questions/FillBlank");
-const { firebaseConfig } = require("./confg");
-const { replaceQuestion } = require("./Questions/TrueFalse");
+  FILL_IN_THE_SPACE_TYPE,
+  TRUE_FALSE_TYPE,
+  MCQ_TYPE,
+} = require("./config");
+const {
+  uploadFile,
+  saveFileUrlToDatabase,
+  listFiles,
+  getQuestionById,
+  deleteQuestionById,
+} = require("./firebase");
+const {
+  generateTrueFalseQuestion,
+  generateFillSpaceQuestion,
+  generateMcqQuestion,
+} = require("./Question/Generators");
 
 const app = express();
+
+// Fix to test with Postman
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json({ limit: "1mb" }));
 
-const firebase = initializeApp(firebaseConfig);
-const db = getFirestore(firebase);
-const storage = getStorage(firebase);
-
-const uploadFile = async (file, fileName) => {
-  const metadata = {
-    contentType: "text/html",
-  };
-  const storageRef = ref(storage, `/templates/${fileName}`);
-  const snapshot = await uploadString(storageRef, file, "raw", metadata);
-  return snapshot;
-};
-
-const getFileUrl = async (snapshot) => {
-  return await getDownloadURL(snapshot.ref);
-};
-
+// generate Fill Space Question
 app.post("/fill-space", async (req, res) => {
-  const fileName = "Fill_in_the_Space.html";
-  const inputDir = "./templates";
-  const outputDir = "./dist";
-  const endcoding = "utf-8";
+  const { name: objectName, question_header, questions, answers } = req.body;
 
-  const { question_header, questions, answers } = req.body;
-
-  console.log("question_header: ", question_header);
-
-  const file = fs.readFileSync(`${inputDir}/${fileName}`, endcoding);
-  let newFile = replaceQuestionHeader(file, question_header);
-  newFile = replaceQuestions(newFile, questions, answers);
-  fs.writeFileSync(`${outputDir}/${fileName}`, newFile, endcoding);
-
-  const outputFile = fs.readFileSync(`${outputDir}/${fileName}`, endcoding);
-  const snapshot = await uploadFile(outputFile, fileName);
-  const url = await getFileUrl(snapshot);
-
+  const file = generateFillSpaceQuestion(question_header, questions, answers);
+  const { url, id } = await uploadFile(file);
+  saveFileUrlToDatabase(id, objectName, url, FILL_IN_THE_SPACE_TYPE);
   res.status(200).send({ url: url });
 });
 
-app.post("/true-false", async (req, res) => {
-  const fileName = "F_Template.html";
-  const inputDir = "./templates";
-  const outputDir = "./dist";
-  const endcoding = "utf-8";
+app.post("/mcq", async (req, res) => {
+  const { name: objectName, question, answer } = req.body;
 
-  const { question, answer } = req.body;
+  const file = generateMcqQuestion(question, answer);
+  const { url, id } = await uploadFile(file);
 
-  const file = fs.readFileSync(`${inputDir}/${fileName}`, endcoding);
-
-  let newFile = replaceQuestion(file, question, answer);
-  fs.writeFileSync(`${outputDir}/${fileName}`, newFile, endcoding);
-
-  const outputFile = fs.readFileSync(`${outputDir}/${fileName}`, endcoding);
-  const snapshot = await uploadFile(outputFile, fileName);
-  const url = await getFileUrl(snapshot);
-
+  saveFileUrlToDatabase(id, objectName, url, MCQ_TYPE);
   res.status(200).send({ url: url });
+});
+
+// generate True False Question
+app.post("/true-false", async (req, res) => {
+  const { name: objectName, question, answer } = req.body;
+  const file = generateTrueFalseQuestion(question, answer);
+  const { url, id } = await uploadFile(file);
+  saveFileUrlToDatabase(id, objectName, url, TRUE_FALSE_TYPE);
+  res.status(200).send({ url: url });
+});
+
+// list all questions
+app.get("/list", async (req, res) => {
+  const data = await listFiles();
+  res.status(200).send(data);
+});
+
+// get questions by its id
+app.get("/question", async (req, res) => {
+  const { id } = req.query;
+  const { status, question } = await getQuestionById(id);
+  res.status(status).send(question);
+});
+
+// delete question by its id
+app.delete("/question", async (req, res) => {
+  const { id } = req.query;
+  const { status, question } = await deleteQuestionById(id);
+  res.status(status).send(question);
 });
 
 app.get("/", async (req, res) => {
