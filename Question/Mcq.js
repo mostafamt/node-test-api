@@ -1,4 +1,6 @@
 const fs = require("fs");
+const { generateNewMcqQuestion } = require("./Generators");
+const { uploadFile, saveFilesToDatabase } = require("../firebase");
 
 const replaceMcqQuestionTitle = (content, questionTitle) => {
   return content.replace(
@@ -7,22 +9,23 @@ const replaceMcqQuestionTitle = (content, questionTitle) => {
   );
 };
 
-const getOption = (text, ans) => {
+const getOption = (title, correct) => {
   const option = {
-    correct: ans,
+    correct: correct,
     tipsAndFeedback: {
-      chosenFeedback: "<div>FB-Selected1</div>\\n",
-      notChosenFeedback: "<div>FB-notSelected1</div>\\n",
+      chosenFeedback: "<div></div>\\n",
+      notChosenFeedback: "<div></div>\\n",
       tip: "",
     },
-    text: `<div>${text}</div>\\n`,
+    text: `<div>${title}</div>\\n`,
   };
   return option;
 };
 
-const replaceMcqQuestionOptions = (content, options, answer) => {
-  const array = options.map((option, idx) => {
-    return getOption(option, answer[idx]);
+const replaceMcqQuestionOptions = (content, options) => {
+  const array = options.map((option) => {
+    const { title, correct } = option;
+    return getOption(title, correct);
   });
   return content.replace(
     /\"answers\"[\s\S]*\\n"}]/g,

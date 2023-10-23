@@ -3,6 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <script>
+      function resize() {
+        setInterval(() => {
+          if (document.querySelector(".h5p-content").clientHeight) {
+            window.parent.postMessage(
+              {
+                title: document
+                  .getElementById("h5p-mcq0")
+                  .getElementsByTagName("p")[0].innerHTML,
+                height: document.querySelector(".h5p-content").clientHeight,
+              },
+              "*"
+            );
+          }
+        }, 100);
+      }
+
+      window.addEventListener("load", resize);
+
       H5PIntegration = {
         ajax: { setFinished: "", contentUserData: "" },
         ajaxPath: "/h5p/ajax?action=",
@@ -17,8 +35,34 @@
               icon: false,
             },
             fullScreen: "0",
-            jsonContent:
-              '{"media":{"disableImageZooming":false},"answers":[{"correct":true,"tipsAndFeedback":{"chosenFeedback":"<div>FB-Selected1</div>\\n","notChosenFeedback":"<div>FB-notSelected1</div>\\n","tip":""},"text":"<div>Mostafa</div>\\n"},{"correct": false,"tipsAndFeedback":{"chosenFeedback":"<div>FB-Selected1</div>\\n","notChosenFeedback":"<div>FB-notSelected1</div>\\n","tip":""},"text":"<div>Ahmed</div>\\n"}],"overallFeedback":[{"from":0,"to":49,"feedback":"you can do better"},{"from":50,"to":79,"feedback":"Not bad"},{"from":80,"to":100,"feedback":"Excellent"}],"behaviour":{"enableRetry":true,"enableSolutionsButton":true,"enableCheckButton":true,"type":"auto","singlePoint":false,"randomAnswers":true,"showSolutionsRequiresInput":true,"confirmCheckDialog":false,"confirmRetryDialog":false,"autoCheck":false,"passPercentage":100,"showScorePoints":true},"UI":{"checkAnswerButton":"Check","submitAnswerButton":"Submit","showSolutionButton":"Show solution","tryAgainButton":"Retry","tipsLabel":"Show tip","scoreBarLabel":"You got :num out of :total points","tipAvailable":"Tip available","feedbackAvailable":"Feedback available","readFeedback":"Read feedback","wrongAnswer":"Wrong answer","correctAnswer":"Correct answer","shouldCheck":"Should have been checked","shouldNotCheck":"Should not have been checked","noInput":"Please answer before viewing the solution","a11yCheck":"Check the answers. The responses will be marked as correct, incorrect, or unanswered.","a11yShowSolution":"Show the solution. The task will be marked with its correct solution.","a11yRetry":"Retry the task. Reset all responses and start the task over again."},"confirmCheck":{"header":"Finish ?","body":"Are you sure you wish to finish ?","cancelLabel":"Cancel","confirmLabel":"Finish"},"confirmRetry":{"header":"Retry ?","body":"Are you sure you wish to retry ?","cancelLabel":"Cancel","confirmLabel":"Confirm"},"question":"<p>what is your name</p>\\n"}',
+            jsonContent: `{"media":${JSON.stringify({
+              // type: {
+              //   params: {
+              //     contentName: "Image",
+              //     file: {
+              //       path: "",
+              //       mime: "image/jpeg",
+              //       width: 1588,
+              //       height: 458,
+              //       copyright: { license: "U" },
+              //     },
+              //     alt: "",
+              //     decorative: false,
+              //   },
+              //   library: "H5P.Image 1.1",
+              //   subContentId: "f4e153ab-9205-422a-bf73-9eb6ab6f559e",
+              //   metadata: {
+              //     title: "Freshly Picked Blackcurrants",
+              //     authors: [{ name: "Karen Jackson", role: "Author" }],
+              //     source:
+              //       "https://www.flickr.com/photos/72284410@N08/9931852063/in/photolist-g8DkAF-FF57V-pQrisU-eNx7Xv-CVDop-dRqhxQ-f5wFEf-sBH1TD-GgGUH-fnuh5o-7TQn5D-euLUTZ-aCeni4-2toM6q-mHGje4-WSC8o-36TfgT-yEURne-rVjrmL-54cA6M-6ExHZG-a3M869-3ddWV-9VLJve-54e4ff-qFHgt-qFGVb-5jBdE3",
+              //     license: "CC BY-ND",
+              //     licenseVersion: "4.0",
+              //     contentType: "Image",
+              //   },
+              // },
+              disableImageZooming: true,
+            })},"answers":[{"correct":false,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>Option 7c</div>\\n"},{"correct":true,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>Option 29</div>\\n"}],"overallFeedback":[{"from":0,"to":49,"feedback":"you can do better"},{"from":50,"to":79,"feedback":"Not bad"},{"from":80,"to":100,"feedback":"Excellent"}],"behaviour":{"enableRetry":true,"enableSolutionsButton":true,"enableCheckButton":true,"type":"auto","singlePoint":false,"randomAnswers":true,"showSolutionsRequiresInput":true,"confirmCheckDialog":false,"confirmRetryDialog":false,"autoCheck":false,"passPercentage":100,"showScorePoints":true},"UI":{"checkAnswerButton":"Check","submitAnswerButton":"Submit","showSolutionButton":"Show solution","tryAgainButton":"Retry","tipsLabel":"Show tip","scoreBarLabel":"You got :num out of :total points","tipAvailable":"Tip available","feedbackAvailable":"Feedback available","readFeedback":"Read feedback","wrongAnswer":"Wrong answer","correctAnswer":"Correct answer","shouldCheck":"Should have been checked","shouldNotCheck":"Should not have been checked","noInput":"Please answer before viewing the solution","a11yCheck":"Check the answers. The responses will be marked as correct, incorrect, or unanswered.","a11yShowSolution":"Show the solution. The task will be marked with its correct solution.","a11yRetry":"Retry the task. Reset all responses and start the task over again."},"confirmCheck":{"header":"Finish ?","body":"Are you sure you wish to finish ?","cancelLabel":"Cancel","confirmLabel":"Finish"},"confirmRetry":{"header":"Retry ?","body":"Are you sure you wish to retry ?","cancelLabel":"Cancel","confirmLabel":"Confirm"},"question":"<p>Question title</p>\\n"}`,
             library: "H5P.MultiChoice 1.16",
             contentUrl: ".",
             metadata: {
@@ -6363,7 +6407,10 @@
                   (this.send = function (e, t) {
                     ((t = void 0 === t ? {} : t).context = "h5p"),
                       (t.action = e),
-                      window.parent.postMessage(t, "*");
+                      window.parent.postMessage(
+                        JSON.stringify({ message: "Hello world" }),
+                        "*"
+                      );
                   });
               })()
             : void 0),

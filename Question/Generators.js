@@ -1,4 +1,6 @@
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+
 const { replaceQuestionHeader, replaceQuestions } = require("./FillBlank");
 const { replaceQuestion } = require("./TrueFalse");
 const { replaceMcqQuestionTitle, replaceMcqQuestionOptions } = require("./Mcq");
@@ -11,7 +13,13 @@ const {
   INPUT_DIR,
   OUTPUT_DIR,
   ENCODING,
+  MCQ_TYPE,
 } = require("../config");
+const {
+  uploadFile,
+  saveFilesToDatabase,
+  saveFileToMongo,
+} = require("../firebase");
 
 const generateTrueFalseQuestion = (question, answer) => {
   const file = fs.readFileSync(
@@ -47,6 +55,43 @@ const generateFillSpaceQuestion = (question_header, questions, answers) => {
   return outputFile;
 };
 
+const generateNewMcqQuestion = (questions) => {
+  const template_file = fs.readFileSync(
+    `${INPUT_DIR}/${MCQ_FILE_NAME}`,
+    ENCODING
+  );
+  const files = questions.map((question) => {
+    const id = uuidv4();
+    const { title, options } = question;
+    let newFile = replaceMcqQuestionTitle(template_file, title);
+    newFile = replaceMcqQuestionOptions(newFile, options);
+    fs.writeFileSync(`${OUTPUT_DIR}/MCQ_Template${id}.html`, newFile, ENCODING);
+    const outputFile = fs.readFileSync(
+      `${OUTPUT_DIR}/MCQ_Template${id}.html`,
+      ENCODING
+    );
+    return outputFile;
+  });
+  return files;
+};
+
+const generateAndUploadMutipleChoicesQuestions = async (
+  objectName,
+  questions
+) => {
+  const localFiles = generateNewMcqQuestion(questions);
+
+  const files = await Promise.all(
+    localFiles.map(async (file) => {
+      const { url } = await uploadFile(file);
+      return url;
+    })
+  );
+  // await saveFilesToDatabase(objectName, files, questions, MCQ_TYPE);
+  await saveFileToMongo(objectName, files[0], MCQ_TYPE);
+  return files;
+};
+
 const generateMcqQuestion = (question, answer) => {
   const { title, options } = question;
   const file = fs.readFileSync(`${INPUT_DIR}/${MCQ_FILE_NAME}`, ENCODING);
@@ -66,4 +111,6 @@ module.exports = {
   generateTrueFalseQuestion,
   generateFillSpaceQuestion,
   generateMcqQuestion,
+  generateNewMcqQuestion,
+  generateAndUploadMutipleChoicesQuestions,
 };

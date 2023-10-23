@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <script>
+      window.top.postMessage(JSON.stringify({ message: "Hello there!" }), "*");
+      console.log("hello");
+      // window.parent.postMessage({ width: 640, height: 480 }, "*");
+      console.log("hello");
       H5PIntegration = {
         ajax: { setFinished: "", contentUserData: "" },
         ajaxPath: "/h5p/ajax?action=",
@@ -18,7 +22,7 @@
             },
             fullScreen: "0",
             jsonContent:
-              '{"media":{"disableImageZooming":false},"answers":[{"correct":true,"tipsAndFeedback":{"chosenFeedback":"<div>FB-Selected1</div>\\n","notChosenFeedback":"<div>FB-notSelected1</div>\\n","tip":""},"text":"<div>Mostafa</div>\\n"},{"correct": false,"tipsAndFeedback":{"chosenFeedback":"<div>FB-Selected1</div>\\n","notChosenFeedback":"<div>FB-notSelected1</div>\\n","tip":""},"text":"<div>Ahmed</div>\\n"}],"overallFeedback":[{"from":0,"to":49,"feedback":"you can do better"},{"from":50,"to":79,"feedback":"Not bad"},{"from":80,"to":100,"feedback":"Excellent"}],"behaviour":{"enableRetry":true,"enableSolutionsButton":true,"enableCheckButton":true,"type":"auto","singlePoint":false,"randomAnswers":true,"showSolutionsRequiresInput":true,"confirmCheckDialog":false,"confirmRetryDialog":false,"autoCheck":false,"passPercentage":100,"showScorePoints":true},"UI":{"checkAnswerButton":"Check","submitAnswerButton":"Submit","showSolutionButton":"Show solution","tryAgainButton":"Retry","tipsLabel":"Show tip","scoreBarLabel":"You got :num out of :total points","tipAvailable":"Tip available","feedbackAvailable":"Feedback available","readFeedback":"Read feedback","wrongAnswer":"Wrong answer","correctAnswer":"Correct answer","shouldCheck":"Should have been checked","shouldNotCheck":"Should not have been checked","noInput":"Please answer before viewing the solution","a11yCheck":"Check the answers. The responses will be marked as correct, incorrect, or unanswered.","a11yShowSolution":"Show the solution. The task will be marked with its correct solution.","a11yRetry":"Retry the task. Reset all responses and start the task over again."},"confirmCheck":{"header":"Finish ?","body":"Are you sure you wish to finish ?","cancelLabel":"Cancel","confirmLabel":"Finish"},"confirmRetry":{"header":"Retry ?","body":"Are you sure you wish to retry ?","cancelLabel":"Cancel","confirmLabel":"Confirm"},"question":"<p>what is your name</p>\\n"}',
+              '{"media":{"disableImageZooming":false},"answers":[{"correct":false,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>Not, OR and AND</div>\\n"},{"correct":false,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>XOR, OR and AND</div>\\n"},{"correct":false,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>XNOR, NOR and NAND</div>\\n"},{"correct":true,"tipsAndFeedback":{"chosenFeedback":"<div></div>\\n","notChosenFeedback":"<div></div>\\n","tip":""},"text":"<div>NOR and NAND</div>\\n"}],"overallFeedback":[{"from":0,"to":49,"feedback":"you can do better"},{"from":50,"to":79,"feedback":"Not bad"},{"from":80,"to":100,"feedback":"Excellent"}],"behaviour":{"enableRetry":true,"enableSolutionsButton":true,"enableCheckButton":true,"type":"auto","singlePoint":false,"randomAnswers":true,"showSolutionsRequiresInput":true,"confirmCheckDialog":false,"confirmRetryDialog":false,"autoCheck":false,"passPercentage":100,"showScorePoints":true},"UI":{"checkAnswerButton":"Check","submitAnswerButton":"Submit","showSolutionButton":"Show solution","tryAgainButton":"Retry","tipsLabel":"Show tip","scoreBarLabel":"You got :num out of :total points","tipAvailable":"Tip available","feedbackAvailable":"Feedback available","readFeedback":"Read feedback","wrongAnswer":"Wrong answer","correctAnswer":"Correct answer","shouldCheck":"Should have been checked","shouldNotCheck":"Should not have been checked","noInput":"Please answer before viewing the solution","a11yCheck":"Check the answers. The responses will be marked as correct, incorrect, or unanswered.","a11yShowSolution":"Show the solution. The task will be marked with its correct solution.","a11yRetry":"Retry the task. Reset all responses and start the task over again."},"confirmCheck":{"header":"Finish ?","body":"Are you sure you wish to finish ?","cancelLabel":"Cancel","confirmLabel":"Finish"},"confirmRetry":{"header":"Retry ?","body":"Are you sure you wish to retry ?","cancelLabel":"Cancel","confirmLabel":"Confirm"},"question":"<p>The following gates are designed as Universal Gates</p>\\n"}',
             library: "H5P.MultiChoice 1.16",
             contentUrl: ".",
             metadata: {
@@ -6363,7 +6367,10 @@
                   (this.send = function (e, t) {
                     ((t = void 0 === t ? {} : t).context = "h5p"),
                       (t.action = e),
-                      window.parent.postMessage(t, "*");
+                      window.parent.postMessage(
+                        JSON.stringify({ message: "Hello world" }),
+                        "*"
+                      );
                   });
               })()
             : void 0),

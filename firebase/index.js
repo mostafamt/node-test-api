@@ -1,22 +1,14 @@
 const { v4: uuidv4 } = require("uuid");
 const { initializeApp } = require("firebase/app");
+const MCQ = require("../models/Question");
+
 const {
   getStorage,
   uploadString,
   getDownloadURL,
   ref,
 } = require("firebase/storage");
-const {
-  getFirestore,
-  collection,
-  getDocs,
-  setDoc,
-  doc,
-  serverTimestamp,
-  orderBy,
-  getDoc,
-  deleteDoc,
-} = require("firebase/firestore");
+const { getFirestore, doc, deleteDoc } = require("firebase/firestore");
 const { firebaseConfig } = require("./config");
 
 const firebase = initializeApp(firebaseConfig);
@@ -37,38 +29,37 @@ const uploadFile = async (file) => {
   return { url, id };
 };
 
+const uploadImage = async (file) => {
+  const metadata = {
+    contentType: "image/png",
+  };
+  const id = uuidv4();
+  const storageRef = ref(storage, `/templates/${id}`);
+  const snapshot = await uploadString(storageRef, file, "raw", metadata);
+  const url = await getDownloadURL(snapshot.ref);
+  return { url, id };
+};
+
 //////////////////////////////////
-// FIRESTORE
+// MONGODB
 //////////////////////////////////
-const saveFileUrlToDatabase = async (id, name, FileUrl, type) => {
-  await setDoc(doc(db, "templates", id), {
-    id,
-    url: FileUrl,
-    type,
+const saveFileToMongo = async (name, fileUrl, type) => {
+  const data = await MCQ.create({
     name,
-    createdAt: serverTimestamp(),
+    url: fileUrl,
+    type,
   });
 };
 
 const listFiles = async () => {
-  let data = [];
-  const querySnapshot = await getDocs(
-    collection(db, "templates"),
-    orderBy("createdAt", "asc")
-  );
-  querySnapshot.forEach((doc) => {
-    data = [...data, doc.data()];
-  });
-
+  const data = await MCQ.find({});
   return data;
 };
 
 const getQuestionById = async (id) => {
-  const docRef = doc(db, "templates", id);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    return { status: 200, question: docSnap.data() };
+  const question = await MCQ.findById(id);
+  if (question) {
+    return { status: 200, question };
   } else {
     return { status: 404, question: "Not Found" };
   }
@@ -91,8 +82,9 @@ const deleteQuestionById = async (id) => {
 
 module.exports = {
   uploadFile,
-  saveFileUrlToDatabase,
+  uploadImage,
   listFiles,
   getQuestionById,
   deleteQuestionById,
+  saveFileToMongo,
 };
